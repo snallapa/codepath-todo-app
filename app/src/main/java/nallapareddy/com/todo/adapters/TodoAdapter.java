@@ -97,7 +97,7 @@ public class TodoAdapter extends BaseAdapter {
                     color = Color.GREEN;
                     break;
                 case LOW:
-                    color = Color.YELLOW;
+                    color = Color.CYAN;
                     break;
                 default:
                     color = Color.BLACK;
