@@ -26,7 +26,7 @@ The following **optional** features are implemented:
 
 The following **additional** features are implemented:
 
-* [x] Added a way to check the item on the todo list
+* [x] Added a way to check the item on the todo list to mark item as completed
 
 ## Video Walkthrough 
 
