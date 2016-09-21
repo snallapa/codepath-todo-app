@@ -13,6 +13,7 @@ import android.widget.EditText;
 import android.widget.ListView;
 
 import org.apache.commons.io.FileUtils;
+import org.parceler.Parcels;
 
 import java.io.File;
 import java.io.IOException;
@@ -23,9 +24,10 @@ import butterknife.ButterKnife;
 import nallapareddy.com.todo.R;
 import nallapareddy.com.todo.adapters.TodoAdapter;
 import nallapareddy.com.todo.dialogs.AddNewTodoDialog;
+import nallapareddy.com.todo.interfaces.AddNewTodoListener;
 import nallapareddy.com.todo.model.Todo;
 
-public class MainActivity extends AppCompatActivity implements AddNewTodoDialog.AddNewTodo {
+public class MainActivity extends AppCompatActivity implements AddNewTodoListener {
 
     public static final String ITEM_EXTRA = "item";
     public static final String POSITION_EXTRA = "position";
@@ -44,29 +46,20 @@ public class MainActivity extends AppCompatActivity implements AddNewTodoDialog.
         ButterKnife.bind(this);
         adapter = new TodoAdapter(this, items);
         listView.setAdapter(adapter);
-        setupDeleteAction();
         setupEditAction();
-    }
-
-    private void setupDeleteAction() {
-        listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-            @Override
-            public boolean onItemLongClick(AdapterView<?> adapterView, View view, int position, long l) {
-                items.remove(position);
-                adapter.newItems(items);
-                return false;
-            }
-        });
     }
 
     private void setupEditAction() {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
-                Intent intent = new Intent(MainActivity.this, EditActivity.class);
-                //intent.putExtra(ITEM_EXTRA, items.get(position));
-                intent.putExtra(POSITION_EXTRA, position);
-                startActivityForResult(intent, REQUEST_CODE);
+                boolean editItem = adapter.getItemViewType(position) == TodoAdapter.VIEW_TODO;
+                if (editItem) {
+                    Intent intent = new Intent(MainActivity.this, EditActivity.class);
+                    intent.putExtra(ITEM_EXTRA, Parcels.wrap(adapter.getItem(position)));
+                    intent.putExtra(POSITION_EXTRA, position);
+                    startActivityForResult(intent, REQUEST_CODE);
+                }
             }
         });
     }

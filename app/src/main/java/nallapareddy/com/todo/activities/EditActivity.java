@@ -6,30 +6,23 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
 
+import org.parceler.Parcels;
+
 import nallapareddy.com.todo.R;
+import nallapareddy.com.todo.model.Todo;
 
 public class EditActivity extends AppCompatActivity {
 
     private int position;
+    private Todo currentTodo;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit);
-        String placeHolder = getIntent().getStringExtra(MainActivity.ITEM_EXTRA);
+        currentTodo  = Parcels.unwrap(getIntent().getParcelableExtra(MainActivity.ITEM_EXTRA));
         position = getIntent().getIntExtra(MainActivity.POSITION_EXTRA, -1);
-        EditText editText = (EditText) findViewById(R.id.edit_item);
-        editText.append(placeHolder);
-    }
 
-    public void saveItem(View view) {
-        EditText editText = (EditText) findViewById(R.id.edit_item);
-        String savedString = editText.getText().toString();
-        Intent intent = new Intent();
-        intent.putExtra(MainActivity.ITEM_EXTRA, savedString);
-        intent.putExtra(MainActivity.POSITION_EXTRA, position);
-        setResult(RESULT_OK, intent);
-        finish();
     }
 }

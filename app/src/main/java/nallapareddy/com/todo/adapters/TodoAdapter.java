@@ -24,6 +24,9 @@ import nallapareddy.com.todo.model.Todo;
 
 public class TodoAdapter extends BaseAdapter {
 
+    public static final int VIEW_TODO = 0;
+    public static final int VIEW_HEADER = 1;
+
     private List<Todo> uncompletedTodos;
     private List<Todo> completedTodos;
     private Context context;
@@ -50,8 +53,27 @@ public class TodoAdapter extends BaseAdapter {
     }
 
     @Override
+    public int getViewTypeCount() {
+        return 2;
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        if (!completedTodos.isEmpty() && position == uncompletedTodos.size()) {
+            return VIEW_HEADER;
+        } else {
+            return VIEW_TODO;
+        }
+    }
+
+    @Override
     public int getCount() {
-        return uncompletedTodos.size() + completedTodos.size();
+        int size = uncompletedTodos.size() + completedTodos.size();
+        if (!completedTodos.isEmpty()) {
+            //account for header
+            size++;
+        }
+        return size;
     }
 
     @Override
@@ -59,7 +81,7 @@ public class TodoAdapter extends BaseAdapter {
         if (position < uncompletedTodos.size()) {
             return uncompletedTodos.get(position);
         } else {
-            return completedTodos.get(position - uncompletedTodos.size());
+            return completedTodos.get(position - uncompletedTodos.size() - 1);
         }
     }
 
@@ -70,6 +92,23 @@ public class TodoAdapter extends BaseAdapter {
 
     @Override
     public View getView(int position, View view, ViewGroup viewGroup) {
+        int itemViewType = getItemViewType(position);
+        switch (itemViewType) {
+            case VIEW_TODO:
+                return getTodoView(position, view, viewGroup);
+            case VIEW_HEADER:
+                return getHeaderView(viewGroup);
+            default:
+                throw new RuntimeException("Invalid View Header");
+        }
+    }
+
+    private View getHeaderView(ViewGroup viewGroup) {
+        View view = LayoutInflater.from(context).inflate(R.layout.todo_list_header, viewGroup, false);
+        return view;
+    }
+
+    private View getTodoView(int position, View view, ViewGroup viewGroup) {
         final ViewHolder holder;
         if (view != null) {
             holder = (ViewHolder) view.getTag();
@@ -79,6 +118,7 @@ public class TodoAdapter extends BaseAdapter {
             view.setTag(holder);
         }
         final Todo currentTodo = getItem(position);
+        holder.divider.setVisibility(showLastDivider(position) ? View.GONE : View.VISIBLE);
         holder.priority.setText(currentTodo.getPriority().getRegularName());
         holder.name.setText(currentTodo.getName());
         if (currentTodo.isCompleted()) {
@@ -105,6 +145,7 @@ public class TodoAdapter extends BaseAdapter {
             holder.priority.setTextColor(color);
         }
         holder.checkBox.setChecked(currentTodo.isCompleted());
+        holder.checkBox.setEnabled(!currentTodo.isCompleted());
         holder.checkBox.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -115,12 +156,16 @@ public class TodoAdapter extends BaseAdapter {
         return view;
     }
 
+    private boolean showLastDivider(int position) {
+        return position == uncompletedTodos.size() - 1 && !completedTodos.isEmpty();
+    }
+
     public void newItems(List<Todo> items) {
         splitTodos(items);
         notifyDataSetChanged();
     }
 
-    public void reorderItems() {
+    private void reorderItems() {
         List<Todo> items = new ArrayList<>();
         items.addAll(completedTodos);
         items.addAll(uncompletedTodos);
@@ -135,6 +180,8 @@ public class TodoAdapter extends BaseAdapter {
         TextView name;
         @BindView(R.id.todo_priority)
         TextView priority;
+        @BindView(R.id.divider)
+        View divider;
 
         public ViewHolder(View view) {
             ButterKnife.bind(this, view);

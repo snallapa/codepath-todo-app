@@ -14,7 +14,8 @@ import android.widget.Spinner;
 
 import butterknife.ButterKnife;
 import nallapareddy.com.todo.R;
-import nallapareddy.com.todo.enums.Priority;
+import nallapareddy.com.todo.interfaces.AddNewTodoListener;
+import nallapareddy.com.todo.model.Priority;
 import nallapareddy.com.todo.model.Todo;
 
 
@@ -48,15 +49,11 @@ public class AddNewTodoDialog extends DialogFragment {
     }
 
     private void commit() {
-        if (getActivity() instanceof AddNewTodo) {
+        if (getActivity() instanceof AddNewTodoListener) {
             Todo todo = new Todo(todoName.getText().toString(), (Priority) prioritySpinner.getSelectedItem());
-            ((AddNewTodo) getActivity()).addNewTodo(todo);
+            ((AddNewTodoListener) getActivity()).addNewTodo(todo);
         } else {
             throw new RuntimeException("Activity did not implement AddNewTodo interface");
         }
-    }
-
-    public interface AddNewTodo {
-        void addNewTodo(Todo todo);
     }
 }

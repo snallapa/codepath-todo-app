@@ -1,5 +1,4 @@
-package nallapareddy.com.todo.enums;
-
+package nallapareddy.com.todo.model;
 
 public enum  Priority {
     HIGH("HIGH"), MEDIUM("MEDIUM"), LOW("LOW");

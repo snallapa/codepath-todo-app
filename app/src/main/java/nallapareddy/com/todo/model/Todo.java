@@ -2,20 +2,25 @@ package nallapareddy.com.todo.model;
 
 import android.support.annotation.NonNull;
 
-import nallapareddy.com.todo.enums.Priority;
+import org.parceler.Parcel;
 
+@Parcel
 public class Todo implements Comparable<Todo> {
-    private String name;
-    private boolean completed;
-    private Priority priority;
+    String name;
+    boolean completed;
+    int priority;
+
+    public Todo() {
+
+    }
 
     public Todo(String name, Priority priority) {
         this.name = name;
-        this.priority = priority;
+        this.priority = priority.ordinal();
     }
 
     public Priority getPriority() {
-        return priority;
+        return Priority.values()[priority];
     }
 
     public String getName() {
@@ -27,7 +32,7 @@ public class Todo implements Comparable<Todo> {
         if (todo.priority == this.priority) {
             return this.name.compareTo(todo.name);
         } else {
-            return this.priority.ordinal() > todo.priority.ordinal() ? 1 : -1;
+            return this.priority > todo.priority ? 1 : -1;
         }
     }
 
@@ -37,5 +42,13 @@ public class Todo implements Comparable<Todo> {
 
     public void setCompleted(boolean completed) {
         this.completed = completed;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setPriority(int priority) {
+        this.priority = priority;
     }
 }
