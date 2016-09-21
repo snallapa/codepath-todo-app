@@ -4,11 +4,14 @@ import android.support.annotation.NonNull;
 
 import org.parceler.Parcel;
 
+import java.util.Date;
+
 @Parcel
 public class Todo implements Comparable<Todo> {
     String name;
     boolean completed;
     int priority;
+    Date date;
 
     public Todo() {
 
@@ -50,5 +53,17 @@ public class Todo implements Comparable<Todo> {
 
     public void setPriority(int priority) {
         this.priority = priority;
+    }
+
+    public void setPriority(Priority priority) {
+        this.priority = priority.ordinal();
+    }
+
+    public Date getDate() {
+        return date;
+    }
+
+    public void setDate(Date date) {
+        this.date = date;
     }
 }

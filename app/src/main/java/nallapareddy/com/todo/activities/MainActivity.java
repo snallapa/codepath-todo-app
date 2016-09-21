@@ -8,15 +8,10 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.EditText;
 import android.widget.ListView;
 
-import org.apache.commons.io.FileUtils;
 import org.parceler.Parcels;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 
 import butterknife.BindView;
@@ -26,10 +21,12 @@ import nallapareddy.com.todo.adapters.TodoAdapter;
 import nallapareddy.com.todo.dialogs.AddNewTodoDialog;
 import nallapareddy.com.todo.interfaces.AddNewTodoListener;
 import nallapareddy.com.todo.model.Todo;
+import nallapareddy.com.todo.model.TodoItemAction;
 
 public class MainActivity extends AppCompatActivity implements AddNewTodoListener {
 
     public static final String ITEM_EXTRA = "item";
+    public static final String ACTION_EXTRA = "action";
     public static final String POSITION_EXTRA = "position";
 
     private static final int REQUEST_CODE = 1729;
@@ -56,8 +53,10 @@ public class MainActivity extends AppCompatActivity implements AddNewTodoListene
                 boolean editItem = adapter.getItemViewType(position) == TodoAdapter.VIEW_TODO;
                 if (editItem) {
                     Intent intent = new Intent(MainActivity.this, EditActivity.class);
-                    intent.putExtra(ITEM_EXTRA, Parcels.wrap(adapter.getItem(position)));
-                    intent.putExtra(POSITION_EXTRA, position);
+                    Todo adapterItem = adapter.getItem(position);
+                    int itemsPosition = items.indexOf(adapterItem);
+                    intent.putExtra(ITEM_EXTRA, Parcels.wrap(adapterItem));
+                    intent.putExtra(POSITION_EXTRA, itemsPosition);
                     startActivityForResult(intent, REQUEST_CODE);
                 }
             }
@@ -67,12 +66,22 @@ public class MainActivity extends AppCompatActivity implements AddNewTodoListene
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode == RESULT_OK && requestCode == REQUEST_CODE) {
+            int todoActionInteger = data.getIntExtra(ACTION_EXTRA, -1);
             int position = data.getIntExtra(POSITION_EXTRA, -1);
-            if (position == -1) {
-                return;
+            if (todoActionInteger == -1 || position == -1) {
+                throw new RuntimeException("Illegal action received");
             }
-            //items.set(position, data.getStringExtra(ITEM_EXTRA));
-            adapter.notifyDataSetChanged();
+            TodoItemAction action = TodoItemAction.values()[todoActionInteger];
+            Todo currentTodo = Parcels.unwrap(data.getParcelableExtra(ITEM_EXTRA));
+            switch (action) {
+                case DELETE:
+                    items.remove(position);
+                    break;
+                case SAVE:
+                    items.set(position, currentTodo);
+                    break;
+            }
+            adapter.newItems(items);
         }
     }
 
