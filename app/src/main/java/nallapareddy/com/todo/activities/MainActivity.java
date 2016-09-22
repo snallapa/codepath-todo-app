@@ -10,9 +10,12 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
+import com.activeandroid.query.Select;
+
 import org.parceler.Parcels;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -31,7 +34,7 @@ public class MainActivity extends AppCompatActivity implements AddNewTodoListene
 
     private static final int REQUEST_CODE = 1729;
 
-    private ArrayList<Todo> items = new ArrayList<>();
+    private List<Todo> items = new ArrayList<>();
     private TodoAdapter adapter;
     @BindView(R.id.listview)
     ListView listView;
@@ -41,6 +44,8 @@ public class MainActivity extends AppCompatActivity implements AddNewTodoListene
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
+        items = new Select().from(Todo.class)
+                .orderBy("Name ASC").limit(100).execute();
         adapter = new TodoAdapter(this, items);
         listView.setAdapter(adapter);
         setupEditAction();
@@ -75,10 +80,16 @@ public class MainActivity extends AppCompatActivity implements AddNewTodoListene
             Todo currentTodo = Parcels.unwrap(data.getParcelableExtra(ITEM_EXTRA));
             switch (action) {
                 case DELETE:
+                    items.get(position).delete();
                     items.remove(position);
                     break;
                 case SAVE:
-                    items.set(position, currentTodo);
+                    Todo changingTodo = items.get(position);
+                    changingTodo.setName(currentTodo.getName());
+                    changingTodo.setCompleted(currentTodo.isCompleted());
+                    changingTodo.setPriority(currentTodo.getPriority());
+                    changingTodo.setDate(currentTodo.getDate());
+                    changingTodo.save();
                     break;
             }
             adapter.newItems(items);
@@ -105,6 +116,7 @@ public class MainActivity extends AppCompatActivity implements AddNewTodoListene
 
     @Override
     public void addNewTodo(Todo todo) {
+        todo.save();
         items.add(todo);
         adapter.newItems(items);
     }

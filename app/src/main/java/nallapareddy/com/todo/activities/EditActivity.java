@@ -28,6 +28,7 @@ public class EditActivity extends AppCompatActivity {
 
     private int position;
     private Todo currentTodo;
+    private boolean dateChanged;
 
     @BindView(R.id.edit_todo_name)
     EditText todoName;
@@ -55,7 +56,12 @@ public class EditActivity extends AppCompatActivity {
         if (date != null) {
             cal.setTime(date);
         }
-        todoDate.updateDate(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH));
+        todoDate.init(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH), new DatePicker.OnDateChangedListener() {
+            @Override
+            public void onDateChanged(DatePicker datePicker, int i, int i1, int i2) {
+                dateChanged = true;
+            }
+        });
         todoCompleted.setChecked(currentTodo.isCompleted());
         ArrayAdapter<Priority> priorityArrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, Priority.values());
         todoPriority.setAdapter(priorityArrayAdapter);
@@ -100,7 +106,7 @@ public class EditActivity extends AppCompatActivity {
         int year = todoDate.getYear();
         Calendar calendar = Calendar.getInstance();
         calendar.set(year, month, day);
-        currentTodo.setDate(calendar.getTime());
+        currentTodo.setDate(dateChanged ? calendar.getTime() : currentTodo.getDate());
         currentTodo.setCompleted(todoCompleted.isChecked());
     }
 }

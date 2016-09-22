@@ -12,14 +12,18 @@ import android.widget.BaseAdapter;
 import android.widget.CheckBox;
 import android.widget.TextView;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import nallapareddy.com.todo.R;
+import nallapareddy.com.todo.model.Priority;
 import nallapareddy.com.todo.model.Todo;
 
 public class TodoAdapter extends BaseAdapter {
@@ -124,10 +128,14 @@ public class TodoAdapter extends BaseAdapter {
         if (currentTodo.isCompleted()) {
             holder.name.setPaintFlags(holder.name.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
             holder.name.setTextColor(Color.GRAY);
+            holder.date.setPaintFlags(holder.name.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+            holder.date.setTextColor(Color.GRAY);
             holder.priority.setTextColor(Color.GRAY);
         } else {
-            holder.name.setPaintFlags(holder.name.getPaintFlags() & (~ Paint.STRIKE_THRU_TEXT_FLAG));
+            holder.name.setPaintFlags(holder.name.getPaintFlags() & (~Paint.STRIKE_THRU_TEXT_FLAG));
             holder.name.setTextColor(Color.BLACK);
+            holder.date.setPaintFlags(holder.name.getPaintFlags() & (~Paint.STRIKE_THRU_TEXT_FLAG));
+            holder.date.setTextColor(Color.BLACK);
             int color;
             switch (currentTodo.getPriority()) {
                 case HIGH:
@@ -150,9 +158,16 @@ public class TodoAdapter extends BaseAdapter {
             @Override
             public void onClick(View view) {
                 currentTodo.setCompleted(holder.checkBox.isChecked());
+                currentTodo.save();
                 reorderItems();
             }
         });
+        Date todoDate = currentTodo.getDate();
+        holder.date.setVisibility(todoDate == null ? View.GONE : View.VISIBLE);
+        if (todoDate != null) {
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("E MM/dd/yyy", Locale.US);
+            holder.date.setText(simpleDateFormat.format(todoDate));
+        }
         return view;
     }
 
@@ -182,6 +197,8 @@ public class TodoAdapter extends BaseAdapter {
         TextView priority;
         @BindView(R.id.divider)
         View divider;
+        @BindView(R.id.todo_date)
+        TextView date;
 
         public ViewHolder(View view) {
             ButterKnife.bind(this, view);

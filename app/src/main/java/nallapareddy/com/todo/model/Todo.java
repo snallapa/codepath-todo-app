@@ -5,19 +5,28 @@ import android.support.annotation.NonNull;
 import org.parceler.Parcel;
 
 import java.util.Date;
+import com.activeandroid.Model;
+import com.activeandroid.annotation.Column;
+import com.activeandroid.annotation.Table;
 
-@Parcel
-public class Todo implements Comparable<Todo> {
+@Parcel(analyze = {Todo.class})
+@Table(name = "Items")
+public class Todo extends Model implements Comparable<Todo> {
+    @Column(name = "Name")
     String name;
+    @Column(name = "Completed")
     boolean completed;
+    @Column(name = "Priority")
     int priority;
+    @Column(name = "Date")
     Date date;
 
     public Todo() {
-
+        super();
     }
 
     public Todo(String name, Priority priority) {
+        super();
         this.name = name;
         this.priority = priority.ordinal();
     }
