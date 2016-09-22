@@ -40,7 +40,7 @@ GIF created with [LiceCap](http://www.cockos.com/licecap/).
 
 ## Notes
 
-The biggest challenges I faced were adding multiples views to a Listview. I had trouble dealing with the index correctly and it took a long time to debug to make it work correctly. I also had trouble using Active Android for the first time.It was relatively easy once I had it setup. However, adding the library to my project was harder than I thought it would be. Using it was relatively easy. 
+The biggest challenges I faced were adding multiples views to a Listview. I had trouble dealing with the index correctly and it took a long time to debug to make it work correctly. I also had trouble using Active Android for the first time.It was relatively easy once I had it setup. However, adding the library to my project was harder than I thought it would be. Learning and using it was a breeze becuase of the tutorials provided. 
 
 ## License
 
