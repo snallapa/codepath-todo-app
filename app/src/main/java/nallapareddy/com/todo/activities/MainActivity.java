@@ -45,7 +45,7 @@ public class MainActivity extends AppCompatActivity implements AddNewTodoListene
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
         items = new Select().from(Todo.class)
-                .orderBy("Name ASC").limit(100).execute();
+                .orderBy("Name ASC").limit(1000).execute();
         adapter = new TodoAdapter(this, items);
         listView.setAdapter(adapter);
         setupEditAction();
